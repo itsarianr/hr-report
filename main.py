@@ -1,17 +1,26 @@
 import os
+import sys
 import pandas as pd
 from shamsi_date import Date
 
 
-str_start = '97-07-28'
-str_end = '97-08-06'
 CATEGORY_DURATIONS = {}
+TOTAL_DAYS_COUNT = 0
+
+
+def get_date_range():
+    try:
+        return sys.argv[1], sys.argv[2]
+    except:
+        raise 'Please enter date range!'
 
 
 def read_durations_from_file_by_date(date):
     reports_directory = os.fsencode(date.get_directory_path())
     if not os.path.isdir(reports_directory):
         return
+    global TOTAL_DAYS_COUNT
+    TOTAL_DAYS_COUNT += 1
     for report in os.listdir(reports_directory):
         report_path = os.path.join(
             date.get_directory_path(), os.fsdecode(report))
@@ -42,8 +51,8 @@ def generate_categories_report(str_start_date, str_end_date):
     for category, duration in CATEGORY_DURATIONS.items():
         total_duration += duration
     category_percentages = {}
-    output_report = open(str_start_date + '~'
-                         + str_end_date + '.out', 'w', encoding='utf-8')
+    output_report = open(str_start_date + '~' + str_end_date + '.txt',
+                         'w', encoding='utf-8')
     sorted_category_durations = sorted(
         CATEGORY_DURATIONS.items(), key=lambda x: x[1], reverse=True)
     for category_duration in sorted_category_durations:
@@ -57,8 +66,10 @@ def generate_categories_report(str_start_date, str_end_date):
         output_report.write(
             str_category + ': ' + str(int(category_percentages[category_duration[0]])) + '% (' + str(int(category_duration[1] / 60)) + ' Hours)\n')
     output_report.write('=' * 25 + '\n')
-    output_report.write('SUM: ' + str(int(total_duration / 60)) + ' Hours')
+    output_report.write('SUM: ' + str(int(total_duration / 60)) +
+                        ' Hours in ' + str(TOTAL_DAYS_COUNT) + ' days.')
 
 
+str_start, str_end = get_date_range()
 generate_categories_report(str_start, str_end)
 print('Done!')
