@@ -1,18 +1,10 @@
 import os
-import sys
 import pandas as pd
 from shamsi_date import Date
 
 
 CATEGORY_DURATIONS = {}
 TOTAL_DAYS_COUNT = 0
-
-
-def get_date_range():
-    try:
-        return sys.argv[1], sys.argv[2]
-    except:
-        raise 'Please enter date range!'
 
 
 def read_durations_from_file_by_date(date):
@@ -68,8 +60,3 @@ def generate_categories_report(str_start_date, str_end_date):
     output_report.write('=' * 25 + '\n')
     output_report.write('SUM: ' + str(int(total_duration / 60)) +
                         ' Hours in ' + str(TOTAL_DAYS_COUNT) + ' days.')
-
-
-str_start, str_end = get_date_range()
-generate_categories_report(str_start, str_end)
-print('Done!')
